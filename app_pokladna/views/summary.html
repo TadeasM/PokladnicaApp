@@ -1,0 +1,58 @@
+<div class="col-md-12">
+    <div class="sum-buttons">
+        <button class="btn btn-primary" ng-click="showCost()"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span>Náklady</button>
+        <button class="btn btn-primary" ng-click="showMoney()"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Vklady</button>
+    </div>
+    <form class="form-inline form-search">
+        <div class="form-group">
+            <input type="text" ng-model="search" class="form-control" placeholder="Vyhľadať...">
+        </div>
+    </form>
+    <!-- Money table -->
+    <div class=" col-sm-12 white-bg">
+    <table ng-show="moneyTable" class="table table-hover table-align">
+        <thead>
+            <th>Dátum</th>
+            <th>Vložil</th>
+            <th>čiastka</th>
+            <th class="mobile-not-visible">Poznámka</th>
+        </thead>
+        <tr ng-repeat="x in penize | orderBy:'-date' |filter:search">
+            <td>{{x.date | date:'mediumDate'}}</td>
+            <td>{{x.username}}</td>
+            <td>{{x.sum | number:2}} €</td>
+            <td class="mobile-not-visible">{{x.info}}</td>
+        </tr>
+    </table>
+    </div>
+    <!-- Cost table -->
+    <div class="col-md-12 col-sm-12 white-bg">
+    <table ng-show="costTable" class="table table-hover table-align">
+        <thead>
+            <th class="mobile-not-visible">Id</th>
+            <th>Názov</th>
+            <th class="mobile-not-visible">Dátum</th>
+            <th>Vložil</th>
+            <th>čiastka</th>
+            <th class="mobile-not-visible">Zostatok</th>
+            <th class="mobile-not-visible">Poznámka</th>
+        </thead>
+        <tr dir-paginate="x in naklady | orderBy:'-date' | filter:search| itemsPerPage:10">
+            <td class="mobile-not-visible">{{x.nazev}}</td>
+            <td>{{x.postaSelect || x.info}}</td>
+            <td class="mobile-not-visible">{{x.date | date:'mediumDate'}}</td>
+            <td>{{x.username}}</td>
+            <td>{{x.sum | number:2}} €</td>
+            <td class="mobile-not-visible">{{x.rest | number:2}} €</td>
+            <td class="mobile-not-visible">{{x.info}}</td>
+        </tr>
+    </table>
+        <div ng-show="costTable">
+            <dir-pagination-controls  max-size="5" direction-links="true" boundary-links="true">
+            </dir-pagination-controls>
+        </div>
+    </div>
+</div>
+<!-- <pre>
+        {{moneys | json}}
+    </pre> -->

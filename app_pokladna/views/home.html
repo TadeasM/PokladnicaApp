@@ -1,0 +1,140 @@
+<div class="mypage">
+    <div class="col-md-2 col-sm-12 col-xs-12 side-menu">
+        <button type="button" class="button-tile" data-toggle="modal" data-target="#modal-money" ng-click="today()">
+            <p><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span> Pridať do kasy</p>
+        </button>
+        <button type="button" class="button-tile " data-toggle="modal" data-target="#myModal" ng-click="posta(); formClear()">
+            <p><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Pošta</p>
+        </button>
+        <button type="button" class="button-tile " data-toggle="modal" data-target="#myModal" ng-click="zelezarstvi(); formClear()">
+            <p><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Železiarstvo</p>
+        </button>
+        <button type="button" class="button-tile" data-toggle="modal" data-target="#myModal" ng-click="drogerie(); formClear()">
+            <p><span class="glyphicon glyphicon-tint" aria-hidden="true"></span> Fa-La-Dro</p>
+        </button>
+        <button type="button" class="button-tile " data-toggle="modal" data-target="#myModal" ng-click="kancelar(); formClear()">
+            <p><span class="glyphicon glyphicon-paperclip" aria-hidden="true"></span> Kancelária</p>
+        </button>
+        <button type="button" class="button-tile " data-toggle="modal" data-target="#myModal" ng-click="ostatni(); formClear()">
+            <p><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Ostatné</p>
+        </button>
+    </div>
+    <div class="col-md-10 col-sm-12 mobile-not-visible main-summary main-color">
+    <div ng-show="cashMin" class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Pozor!</strong> V pokladni je menej než 300 €.
+</div>
+<div  class="alert alert-success alert-dismissible" id="success-alert-home" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Vklad prebehol úspešne vo výške: {{moneysum}} €</strong>
+</div>
+<div  class="alert alert-success alert-dismissible" id="success-alert-cost" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Výdaj bol úspešne uložený. {{idSelect}}: {{costsum}} €</strong>
+</div>
+        <a ng-href="#/summary">
+            <div class="tile-dashboard two-rows ">
+                 Stav pokladne: </br>{{restOfMoney | number:0}} €
+            </div>
+        </a>
+        <a ng-href="#/summary">
+            <div class="tile-dashboard two-rows">
+                Náklady celkom:</br>
+                {{howMuchCost | number:0}} €
+            </div>
+        </a>
+        <a ng-href="#/postreclamation">
+            <div class="tile-dashboard-small two-rows">
+                 Reklamácie: </br>{{howManyRecordsRecl}}
+            </div>
+        </a>
+        <a ng-href="#/returnitems">
+            <div class="tile-dashboard-small tile-left two-rows">
+                 Vrátené: </br> {{howManyRecordsReturns}}
+            </div>
+        </a>
+    </div>
+    <div class="col-md-10 col-sm-12 main-top mobile-not-visible">
+        <div class="col-md-12 col-sm-12 white-bg border">
+            <h4> Prehľad posledných výdajov</h4>
+            <table class="table table-hover">
+                <thead>
+                    <th>Id</th>
+                    <!-- <th>Nazev</th> -->
+                    <th>Dátum</th>
+                    <!-- <th>Vlozil</th> -->
+                    <th>Čiastka</th>
+                    <!-- <th>Zustatek</th> -->
+                    <th>Poznámka</th>
+                </thead>
+                <tr ng-repeat="x in naklady | orderBy:'-date' | limitTo:9">
+                    <td>{{x.nazev}}</td>
+                    <!-- <td>{{x.postaSelect || x.info}}</td> -->
+                    <td>{{x.date | date:'mediumDate'}}</td>
+                    <!-- <td>{{x.username}}</td> -->
+                    <td>{{x.sum | number:2}} €</td>
+                    <!-- <td>{{x.rest}} €</td> -->
+                    <td>{{x.info}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content form-group">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" ng-click="closeForm()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title center" id="myModalLabel">{{idSelect}}</h4>
+                </div>
+                <form class="form-modal" name="costForm" ng-submit="addCosts()" novalidate>
+                    <div class="form-group">
+                        <select class="form-control novisible" ng-model="idSelect" ng-disabled="true" ng-options="x for x in idValues">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control" ng-show="postSelectShow" ng-model="postSelect" ng-options="x for x in postValues">
+                            <option value="">--Zvoľte--</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control" type="text" ng-model="infotext" placeholder="Bližšie info" ng-required="reqInfo">
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control" type="number" name="costsum" placeholder="čiastka" ng-model="costsum" ng-required="true" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" ng-keypress="($event.which === 13)?addCosts():0">
+                        <span ng-show="costForm.costsum.$invalid && costForm.costsum.$dirty"><i>
+                        (pozn.: Iba cisla, max 2 desatinné miesta)</i></span>
+                    </div>
+                    <div class="modal-button">
+                        <button class="btn btn-primary" type="submit" ng-disabled="costForm.$invalid" ng-click="addCosts()" data-dismiss="modal">Pridať</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-money" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content form-group">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" ng-click="closeForm()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title center" id="myModalLabel">Peniaze do kasy</h4>
+                </div>
+                <form class="form-modal" name="moneyForm" novalidate>
+                    <div class="form-group">
+                        <input class="form-control" type="date" ng-model="dt" ng-required="true" min="{{date | date:'yyyy-MM-dd'}}">
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control" type="number" placeholder="Zadajte čiastku" ng-model="moneysum" ng-required="true" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" ng-keypress="($event.which === 13)?addCosts():0">
+                        <span style="color:red" ng-show="moneyForm.costsum.$invalid">
+                        Iba 2 desatinné miesta</span>
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control" type="text" ng-model="infotextmoney" placeholder="Bližšie info" ng-required="false">
+                    </div>
+                    <div class="modal-button">
+                        <button class="btn btn-primary" type="submit" ng-disabled="moneyForm.$invalid" ng-click="addMoney()" data-dismiss="modal">Pridať</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
