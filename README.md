@@ -1,5 +1,5 @@
 # PokladnicaApp
-money, costs, reclamations, return items, auth
+Realtime app to watch money, costs, reclamations, return items..
 
 See demo on www.testniweb.eu/pokladna.
 login: test@test.com
